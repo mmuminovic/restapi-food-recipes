@@ -1,6 +1,39 @@
 const Category = require('../models/category');
 const mongoose = require('mongoose');
 
+exports.getCategories = (req, res, next) => {
+    Category
+        .find()
+        .then(docs => {
+            res.status(200).json({
+                message: 'Categories',
+                categories: docs
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            });
+        });
+}
+
+exports.getCategory = (req, res, next) => {
+    const id = req.params.categoryId;
+    Category.findById(id).then(doc => {
+        if (doc) {
+            return res.status(200).json({
+                message: 'Category details',
+                category: doc
+            });
+        }
+        else {
+            return res.status(500).json({
+                message: 'No valid entry found'
+            })
+        }
+    })
+}
+
 exports.addCategory = (req, res, next) => {
     const category = new Category({
         _id: new mongoose.Types.ObjectId(),
@@ -8,46 +41,43 @@ exports.addCategory = (req, res, next) => {
         image: req.body.image
     });
     category.save()
-    .then(result => {
-        console.log(result);
-        res.status(201).json(result);
-    })
-    .catch(err => {
-        res.status(500).json({ error: err });
-    })
+        .then(result => {
+            console.log(result);
+            res.status(201).json(result);
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        })
 }
 
 exports.editCategory = (req, res, next) => {
+    const id = req.params.categoryId;
+    const updateOps = {};
+    for (let ops of req.body) {
+        updateOps[ops.propName] = ops.value;
+    }
 
+    Category.update({ _id: id }, { $set: updateOps })
+        .then(result => {
+            console.log(result);
+            res.status(200).json(result);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({ error: err });
+        })
 }
 
 exports.deleteCategory = (req, res, next) => {
-    res.status(200).json({
-        message: 'Category deleted',
-        categoryId: req.params.categoryId
-    })
-}
-
-exports.getCategories = (req, res, next) => {
-    res.status(200).json({
-        message: 'Category was fetched'
-    })
-}
-
-exports.getCategory = (req, res, next) => {
     const id = req.params.categoryId;
-    Category.findById(id).then(doc => {
-        if(doc) {
-            res.status(200).json(doc);
-        }
-        else {
-            res.status(500).json({
-                message: 'No valid entry found'
-            })
-        }
-    })
-    res.status(200).json({
-        message: 'Category details',
-        categoryId: req.params.categoryId
-    })
+    Category.remove({ _id: id })
+        .then(result => {
+            res.status(200).json({
+                message: 'It has deleted successfully'
+            });
+        })
+        .catch(err => {
+            res.status(500).json({ error: err });
+        })
 }
+
