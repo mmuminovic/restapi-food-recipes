@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const recipeRoutes = require('./api/routes/recipes');
+const categoryRoutes = require('./api/routes/category');
 
 const MONGODB_URI = 'mongodb+srv://Muhamed:' + process.env.MONGO_ATLAS_PW + '@cluster0-nulcu.mongodb.net/foodrecipes?retryWrites=true&w=majority';
 

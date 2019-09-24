@@ -1,6 +1,7 @@
 const Recipe = require('../models/recipe');
 const mongoose = require('mongoose');
 
+
 exports.getRecipes = (req, res, next) => {
     Recipe
         .find()
