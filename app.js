@@ -24,6 +24,7 @@ app.use((req, res, next) => {
 })
 
 app.use('/recipes', recipeRoutes);
+app.use('/category', categoryRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('Not found');

@@ -3,15 +3,14 @@ const mongoose = require('mongoose');
 
 exports.addCategory = (req, res, next) => {
     const category = new Category({
+        _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
         image: req.body.image
     });
     category.save()
     .then(result => {
-        res.status(200).json({
-            message: 'Category has been created',
-            createdCategory: category
-        })
+        console.log(result);
+        res.status(201).json(result);
     })
     .catch(err => {
         res.status(500).json({ error: err });
