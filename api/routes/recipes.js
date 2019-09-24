@@ -4,6 +4,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const recipeController = require('../controllers/recipe');
 const multer = require('multer');
+const checkAuth = require('../middleware/check-auth');
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
@@ -32,13 +33,13 @@ const upload = multer({
 
 router.get('/', recipeController.getRecipes);
 
-router.post('/', upload.single('recipeImage'), recipeController.addRecipe);
+router.post('/', checkAuth, upload.single('recipeImage'), recipeController.addRecipe);
 
 router.get('/:recipeId', recipeController.getRecipe);
 
-router.patch('/:recipeId', recipeController.editRecipe);
+router.patch('/:recipeId', checkAuth, recipeController.editRecipe);
 
-router.delete('/:recipeId', recipeController.deleteRecipe);
+router.delete('/:recipeId', checkAuth, recipeController.deleteRecipe);
 
 
 module.exports = router;
