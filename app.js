@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 
 const recipeRoutes = require('./api/routes/recipes');
 const categoryRoutes = require('./api/routes/category');
+const userRoutes = require('./api/routes/user');
 
 const MONGODB_URI = 'mongodb+srv://Muhamed:' + process.env.MONGO_ATLAS_PW + '@cluster0-nulcu.mongodb.net/foodrecipes?retryWrites=true&w=majority';
 
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
 
 app.use('/recipes', recipeRoutes);
 app.use('/category', categoryRoutes);
+app.use('/user', userRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('Not found');
