@@ -1,4 +1,5 @@
 const Recipe = require('../models/recipe');
+const category = require('./category');
 const mongoose = require('mongoose');
 
 
@@ -33,6 +34,35 @@ exports.getRecipes = (req, res, next) => {
         })
 };
 
+exports.getRecipe = (req, res, next) => {
+    const id = req.params.recipeId;
+    Recipe.findById(id).then(doc => {
+        console.log(doc);
+        if (doc) {
+            res.status(200).json({
+                product: {
+                    name: doc.name,
+                    description: doc.description,
+                    ingredients: doc.ingredients,
+                    measure: doc.measure,
+                    category: doc.category ? doc.category : 'Uncategorized'
+                },
+                request: {
+                    type: 'GET',
+                    url: 'http://localhost:3000/recipes/' + id
+                }
+            });
+        } else {
+            res.status(404).json({
+                message: 'No valid entry found'
+            });
+        }
+    }).catch(err => {
+        console.log(err);
+        res.status(500).json({ error: err })
+    });
+}
+
 exports.addRecipe = (req, res, next) => {
     const recipe = new Recipe({
         _id: new mongoose.Types.ObjectId(),
@@ -66,28 +96,6 @@ exports.addRecipe = (req, res, next) => {
     });
 };
 
-exports.getRecipe = (req, res, next) => {
-    const id = req.params.recipeId;
-    Recipe.findById(id).then(doc => {
-        console.log(doc);
-        if (doc) {
-            res.status(200).json({
-                product: doc,
-                request: {
-                    type: 'GET',
-                    url: 'http://localhost:3000/recipes/' + id
-                }
-            });
-        } else {
-            res.status(404).json({
-                message: 'No valid entry found'
-            });
-        }
-    }).catch(err => {
-        console.log(err);
-        res.status(500).json({ error: err })
-    });
-}
 exports.editRecipe = (req, res, next) => {
     const id = req.params.recipeId;
     const updateOps = {};
@@ -114,14 +122,13 @@ exports.editRecipe = (req, res, next) => {
 exports.deleteRecipe = (req, res, next) => {
     const id = req.params.recipeId;
     Recipe.remove({ _id: id })
-        .exec()
         .then(result => {
             res.status(200).json({
                 message: 'Product deleted',
                 request: {
                     type: 'POST',
                     url: 'http://localhost:3000/products',
-                    body: { name: 'String', description: 'String'}
+                    body: { name: 'String', description: 'String' }
                 }
             });
         })

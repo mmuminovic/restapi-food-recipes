@@ -1,5 +1,6 @@
 const Category = require('../models/category');
 const mongoose = require('mongoose');
+const Recipe = require('../models/recipe');
 
 exports.getCategories = (req, res, next) => {
     Category
@@ -70,6 +71,17 @@ exports.editCategory = (req, res, next) => {
 
 exports.deleteCategory = (req, res, next) => {
     const id = req.params.categoryId;
+    
+    // Recipe.update({ category: id }, {$set: {category: 'Uncategorized'}})
+    // .then(recipes => {
+    //     console.log(recipes);
+    // })
+    // .catch(err => {
+    //     res.status(404).json({
+    //         message: 'No items found'
+    //     })
+    // })
+    
     Category.remove({ _id: id })
         .then(result => {
             res.status(200).json({
@@ -79,5 +91,6 @@ exports.deleteCategory = (req, res, next) => {
         .catch(err => {
             res.status(500).json({ error: err });
         })
+
 }
 
