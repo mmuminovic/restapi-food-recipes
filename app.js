@@ -9,6 +9,7 @@ const recipeRoutes = require('./api/routes/recipes');
 const MONGODB_URI = 'mongodb+srv://Muhamed:' + process.env.MONGO_ATLAS_PW + '@cluster0-nulcu.mongodb.net/foodrecipes?retryWrites=true&w=majority';
 
 app.use(morgan('dev'));
+app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 

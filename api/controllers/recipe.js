@@ -1,6 +1,7 @@
 const Recipe = require('../models/recipe');
 const mongoose = require('mongoose');
 
+
 exports.getRecipes = (req, res, next) => {
     Recipe
         .find()
@@ -15,6 +16,8 @@ exports.getRecipes = (req, res, next) => {
                         ingredients: doc.ingredients,
                         measure: doc.measure,
                         category: doc.category ? doc.category : 'Uncategorized',
+                        image: doc.image,
+                        video: doc.video,
                         request: {
                             type: 'GET',
                             url: 'http://localhost:3000/recipes/' + doc._id
@@ -40,7 +43,7 @@ exports.addRecipe = (req, res, next) => {
         ingredients: req.body.ingredients,
         measure: req.body.measure,
         category: req.body.category,
-        image: req.body.image,
+        image: req.file.path,
         video: req.body.video
     });
     recipe.save().then(doc => {
