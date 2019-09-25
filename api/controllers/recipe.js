@@ -1,32 +1,27 @@
 const Recipe = require('../models/recipe');
-const category = require('./category');
 const mongoose = require('mongoose');
 
 
 exports.getRecipes = (req, res, next) => {
     Recipe
         .find()
-        .select('name description ingredients measure category image video _id')
+        // .select('name description ingredients measure category image video _id')
         .then(docs => {
             const response = {
                 count: docs.length,
                 recipes: docs.map(doc => {
                     return {
+                        id: doc._id,
                         name: doc.name,
                         description: doc.description,
                         ingredients: doc.ingredients,
                         measure: doc.measure,
                         category: doc.category ? doc.category : 'Uncategorized',
                         image: doc.image,
-                        video: doc.video,
-                        request: {
-                            type: 'GET',
-                            url: 'http://localhost:3000/recipes/' + doc._id
-                        }
+                        video: doc.video
                     }
                 })
             }
-            console.log(docs);
             res.status(200).json(response);
         })
         .catch(err => {
@@ -39,29 +34,29 @@ exports.getRecipes = (req, res, next) => {
 exports.getRecipe = (req, res, next) => {
     const id = req.params.recipeId;
     Recipe.findById(id).then(doc => {
-        console.log(doc);
         if (doc) {
             res.status(200).json({
-                product: {
+                message: 'Recepe found',
+                recipe: {
+                    id: doc._id,
                     name: doc.name,
                     description: doc.description,
                     ingredients: doc.ingredients,
                     measure: doc.measure,
-                    category: doc.category ? doc.category : 'Uncategorized'
-                },
-                request: {
-                    type: 'GET',
-                    url: 'http://localhost:3000/recipes/' + id
+                    category: doc.category ? doc.category : 'Uncategorized',
+                    image: doc.image,
+                    video: doc.video
                 }
             });
         } else {
             res.status(404).json({
-                message: 'No valid entry found'
+                message: 'Recipe not found'
             });
         }
     }).catch(err => {
-        console.log(err);
-        res.status(500).json({ error: err })
+        res.status(404).json({
+            message: 'Getting recipe failed'
+        });
     });
 }
 
@@ -77,7 +72,6 @@ exports.addRecipe = (req, res, next) => {
         video: req.body.video
     });
     recipe.save().then(doc => {
-        console.log(doc);
         res.status(201).json({
             message: 'Recipe added successfully',
             createdRecipe: {
@@ -86,15 +80,11 @@ exports.addRecipe = (req, res, next) => {
                 ingredients: doc.ingredients,
                 measure: doc.measure,
                 category: doc.category ? doc.category : 'Uncategorized',
-                request: {
-                    type: 'GET',
-                    url: 'http://localhost:3000/recipes/' + doc._id
-                }
+                video: doc.video,
             }
         });
     }).catch(err => {
-        console.log(err);
-        res.status(500).json({ error: err });
+        res.status(500).json({ message: 'Something went wrong with adding new recipe'});
     });
 };
 
@@ -107,18 +97,12 @@ exports.editRecipe = (req, res, next) => {
 
     Recipe.update({ _id: id }, { $set: updateOps })
         .then(result => {
-            console.log(result);
             res.status(200).json({
-                message: 'Recipe updated',
-                request: {
-                    type: 'GET',
-                    url: 'http://localhost:3000/recipes/' + id
-                }
+                message: 'Recipe updated'
             });
         })
         .catch(err => {
-            console.log(err);
-            res.status(500).json({ error: err });
+            res.status(500).json({ message: 'Something went wrong with editing the recipe'});
         })
 }
 exports.deleteRecipe = (req, res, next) => {
@@ -126,15 +110,12 @@ exports.deleteRecipe = (req, res, next) => {
     Recipe.remove({ _id: id })
         .then(result => {
             res.status(200).json({
-                message: 'Product deleted',
-                request: {
-                    type: 'POST',
-                    url: 'http://localhost:3000/products',
-                    body: { name: 'String', description: 'String' }
-                }
+                message: 'Product deleted'
             });
         })
         .catch(err => {
-            res.status(500).json({ error: err });
+            res.status(500).json({ message: 'Deleting failed. User url is not valid' });
         })
 }
+
+

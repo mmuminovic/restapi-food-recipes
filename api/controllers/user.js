@@ -33,7 +33,7 @@ exports.addUser = (req, res, next) => {
                             })
                             .catch(err => {
                                 res.status(500).json({
-                                    error: err
+                                    message: 'User is not created. Something went wrong. Check the input fields'
                                 })
                             });
                     }
@@ -50,20 +50,23 @@ exports.deleteUser = (req, res, next) => {
                 message: 'User deleted'
             })
         })
+        .catch(err => {
+            res.status(500).json({ message: 'Deleting failed. User url is not valid' })
+        })
 }
 
 exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email })
         .then(user => {
-            if (user.length < 1) {
+            if (!user) {
                 return res.status(401).json({
-                    message: 'Auth failed'
+                    message: 'Email or password is incorrect'
                 })
             }
             bcrypt.compare(req.body.password, user.password, (err, result) => {
                 if (err) {
                     return res.status(401).json({
-                        message: 'Auth failed'
+                        message: 'Email or password is incorrect'
                     })
                 }
                 if (result) {
@@ -82,6 +85,25 @@ exports.login = (req, res, next) => {
                         token: token
                     })
                 }
+            })
+        })
+}
+
+exports.addToFavourites = (req, res, next) => {
+    const userId = req.params.userId;
+    const recipeId = req.body.recipeId.toString();
+    User.findOne({ _id: userId })
+        .then(user => {
+            user.recipes.push(recipeId);
+            res.status(200).json({
+                message: 'Recipe added to favourites',
+                recipes: user.recipes
+            })
+            return user.save();
+        })
+        .catch(err => {
+            res.status(404).json({
+                message: 'User not found'
             })
         })
 }

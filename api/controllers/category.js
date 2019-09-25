@@ -13,7 +13,7 @@ exports.getCategories = (req, res, next) => {
         })
         .catch(err => {
             res.status(500).json({
-                error: err
+                message: 'Something went wrong with getting recipes. Try again'
             });
         });
 }
@@ -29,7 +29,7 @@ exports.getCategory = (req, res, next) => {
         }
         else {
             return res.status(500).json({
-                message: 'No valid entry found'
+                message: 'Category not found'
             })
         }
     })
@@ -43,11 +43,10 @@ exports.addCategory = (req, res, next) => {
     });
     category.save()
         .then(result => {
-            console.log(result);
             res.status(201).json(result);
         })
         .catch(err => {
-            res.status(500).json({ error: err });
+            res.status(500).json({ message: 'Adding category failed. Inputs are not valid' });
         })
 }
 
@@ -60,36 +59,27 @@ exports.editCategory = (req, res, next) => {
 
     Category.update({ _id: id }, { $set: updateOps })
         .then(result => {
-            console.log(result);
             res.status(200).json(result);
         })
         .catch(err => {
-            console.log(err);
-            res.status(500).json({ error: err });
+            res.status(500).json({ message: 'Uploading failed. Inputs are not valid' });
         })
 }
 
 exports.deleteCategory = (req, res, next) => {
     const id = req.params.categoryId;
-    
-    // Recipe.update({ category: id }, {$set: {category: 'Uncategorized'}})
-    // .then(recipes => {
-    //     console.log(recipes);
-    // })
-    // .catch(err => {
-    //     res.status(404).json({
-    //         message: 'No items found'
-    //     })
-    // })
-    
+
     Category.remove({ _id: id })
         .then(result => {
             res.status(200).json({
-                message: 'It has deleted successfully'
+                message: 'Deleting successful'
             });
         })
+        .then(() => {
+            Recipe.update({ category: id }, { $set: { category: null } })
+        })
         .catch(err => {
-            res.status(500).json({ error: err });
+            res.status(500).json({ message: 'Deleting failed. Check url of category' });
         })
 
 }
