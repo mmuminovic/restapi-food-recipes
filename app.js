@@ -45,9 +45,10 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-    .connect(MONGODB_URI, { useMongoClient: true })
+    .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
     .then(result => {
         app.listen(3000);
+        console.log('App is started');
     })
     .catch(err => {
         console.log(err);

@@ -33,7 +33,7 @@ const upload = multer({
 
 router.get('/', recipeController.getRecipes);
 
-router.post('/', checkAuth, upload.single('recipeImage'), recipeController.addRecipe);
+router.post('/', checkAuth, upload.single('image'), recipeController.addRecipe);
 
 router.get('/:recipeId', recipeController.getRecipe);
 
