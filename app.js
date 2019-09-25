@@ -44,12 +44,12 @@ app.use((error, req, res, next) => {
         }
     })
 });
-
+const PORT = process.env.PORT || 8000
 mongoose
     .connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
     .then(result => {
-        app.listen(process.env.PORT || 8000);
-        console.log('App is started');
+        app.listen(PORT);
+        console.log(`App is started and listening on a port ${PORT}`);
     })
     .catch(err => {
         console.log(err);
