@@ -94,7 +94,7 @@ exports.login = (req, res, next) => {
 
 exports.addToFavourites = (req, res, next) => {
     const userId = req.params.userId;
-    const recipeId = req.body.recipeId.toString();
+    const recipeId = req.body.recipeId;
     User.findOne({ _id: userId })
         .then(user => {
             user.recipes.push(recipeId);
